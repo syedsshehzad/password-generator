@@ -1,17 +1,17 @@
 package com.utility;
 
-import java.io.File;
+//import java.io.File;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.HashMap;
-import java.util.Iterator;
+
+import javax.servlet.http.HttpServletRequest;
+
 import java.util.LinkedList;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,12 +42,21 @@ public class WebController {
 	}
 
 	@RequestMapping("/home")
-	public ResponseEntity getHome(@RequestHeader HttpHeaders headers) {
-		File homepage = new File("index.html");
-		String origin = headers.getOrigin();
+	public ResponseEntity<Map<String, String>> getHome(@RequestHeader HttpHeaders headers, HttpServletRequest request) {
+//		File homepage = new File("index.html");
+		String remoteAddr = request.getRemoteAddr();
+		String localAddr = request.getLocalAddr();
+		String localName = request.getLocalName();
+		String remoteHost = request.getRemoteHost();
+		String forwarded = request.getHeader("X-FORWARDED-FOR");
 		Map<String, String> map;
-		map = new TreeMap();
-		return new ResponseEntity(origin, HttpStatus.OK);
+		map = new TreeMap<String, String>();
+		map.put("Remote address", remoteAddr);
+		map.put("Local address", localAddr);
+		map.put("Local name", localName);
+		map.put("Remote host", remoteHost);
+		map.put("X-FORWARDED-FOR", forwarded);
+		return new ResponseEntity<Map<String, String>>(map, HttpStatus.OK);
 	}
 	
 	@RequestMapping("/requirements")
